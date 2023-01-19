@@ -1,16 +1,16 @@
 local M = {}
 
-function M.getJiraUser()
+function M.assignIssue(ticketNumber, user)
   local Job = require('plenary.job')
   local jiraCmd = '/usr/bin/jira'
 
-  local user = nil
-
   local opts = {
     command = jiraCmd,
-    args = { 'me' },
+    args = { 'assign', 'issue', ticketNumber, user },
     on_stdout = function(_, data)
-      user = data
+      if (data ~= nil) then
+        print(ticketNumber .. ' has been assigned to ' .. user)
+      end
     end,
   }
 
@@ -18,6 +18,7 @@ function M.getJiraUser()
   job:sync(20000)
 
   return user
+
 end
 
 return M
