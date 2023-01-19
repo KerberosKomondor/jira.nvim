@@ -28,7 +28,7 @@ function M.listIssues(opts)
       actions.select_default:replace(function()
         actions.close(prompt_bufnr)
         local selection = action_state.get_selected_entry()[1]
-        print('you selected ' .. selection)
+        require 'jira.view-issue'.viewIssue(selection)
       end)
       return true
     end
