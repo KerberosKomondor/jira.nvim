@@ -1,13 +1,41 @@
 local M = {}
 
-function M.listIssues(attach_mappings, opts)
-  local pickers = require "telescope.pickers"
-  local finders = require "telescope.finders"
-  local conf = require("telescope.config").values
-  local user = require 'jira.get-jira-user'.getJiraUser()
+local function listIssuesUi(lines)
+  local Popup = require 'nui.popup'
+  local event = require 'nui.utils.autocmd'.event
 
-  local jiraCommand = {
-    "jira",
+  local popup = Popup({
+    enter = true,
+    focusable = true,
+    border = {
+      style = 'rounded',
+    },
+    position = '50%',
+    size = {
+      width = '80%',
+      height = '60%',
+    },
+  })
+
+  popup:mount()
+
+  popup:on(event.BufLeave, function()
+    popup:unmount()
+  end)
+
+  vim.api.nvim_buf_set_lines(popup.bufnr, 0, 1, false, lines)
+
+  require 'jira.keymaps'.addClose(popup.bufnr)
+  require 'jira.keymaps'.addViewIssue(popup.bufnr)
+end
+
+local timeout = 20000
+
+function M.listIssues()
+  local user = require 'jira.get-jira-user'.getJiraUser()
+  local Job = require 'plenary.job'
+
+  local args = {
     "issues",
     "list",
     "-a",
@@ -15,15 +43,19 @@ function M.listIssues(attach_mappings, opts)
     "--plain",
   }
 
-  opts = opts or {}
+  local issues = {}
 
-  local picker = pickers.new(opts, {
-    prompt_title = "Jira Issues",
-    finder = finders.new_oneshot_job(jiraCommand, opts),
-    sorter = conf.generic_sorter(opts),
-    attach_mappings = attach_mappings
-  })
-  return picker
+  local job = Job:new {
+    command = 'jira',
+    args = args,
+    on_stdout = function(_, line)
+      table.insert(issues, line)
+    end
+  }
+
+  job:sync(timeout)
+
+  listIssuesUi(issues)
 end
 
 return M
