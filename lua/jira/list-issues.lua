@@ -31,6 +31,8 @@ local function listIssuesUi(lines)
 
   require 'jira.keymaps'.addClose(popup.bufnr)
   require 'jira.keymaps'.addViewIssue(popup.bufnr)
+  require 'jira.keymaps'.addAssignIssue()
+  require 'jira.keymaps'.addAssignIssueToMe(popup.bufnr)
 end
 
 local timeout = 20000

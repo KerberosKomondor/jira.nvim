@@ -21,8 +21,6 @@ local function getIssueText(issueNumber)
 end
 
 function M.viewIssue(bufnr)
-  require 'jira.keymaps'.delViewIssue(bufnr)
-
   local selection = vim.api.nvim_get_current_line()
   local issueNumber = require 'jira.parse-selection'.parseSelection(selection)
   local text = getIssueText(issueNumber)
