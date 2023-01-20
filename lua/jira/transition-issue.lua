@@ -1,28 +1,19 @@
 local M = {}
 
-function M.transitionIssue(ticketNumber, user)
-  local Job = require('plenary.job')
-  local jiraCmd = '/usr/bin/jira'
+function M.transitionIssue(bufnr)
+  local selection = vim.api.nvim_get_current_line()
+  local issueNumber = require 'jira.parse-selection'.parseSelection(selection)
 
-  vim.api.nvim_get_color_map()
-
-
-
-  local opts = {
-    command = jiraCmd,
-    args = { 'transition', 'issue', ticketNumber, user },
-    on_stdout = function(_, data)
-      if (data ~= nil) then
-        print(ticketNumber .. ' has been assigned to ' .. user)
-      end
-    end,
+  local Terminal = require('toggleterm.terminal').Terminal
+  local term = Terminal:new {
+    direction = 'float',
+    cmd = 'jira issue transition ' .. issueNumber,
+    close_on_exit = true,
   }
 
+  term:toggle()
 
-  local color = #282a36
-  local job = Job:new(opts)
-  job:sync(20000)
-
+  vim.notify(issueNumber .. ' has been transitioned')
 end
 
 return M

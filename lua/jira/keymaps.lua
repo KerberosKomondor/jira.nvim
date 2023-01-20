@@ -6,7 +6,7 @@ local km_del = vim.api.nvim_buf_del_keymap
 local km_opts = { noremap = true, silent = true }
 
 function M.addClose(bufnr)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'q', '<cmd>:q!<cr>', { noremap = true, silent = true })
+  vim.api.nvim_buf_set_keymap(bufnr, m, 'q', '<cmd>:q!<cr>', km_opts)
 end
 
 local function add(bufnr, key, cmd)
@@ -52,4 +52,16 @@ function M.delAssignIssueToMe(bufnr)
 end
 
 --[[ END ASSIGN TO ME]]
+--
+--[[ TRANSITION ]]
+local transitionKey = 't'
+function M.addTransitionIssue(bufnr)
+  add(bufnr, transitionKey, '<cmd>lua require("jira.transition-issue").transitionIssue(' .. bufnr .. ')<cr>')
+end
+
+function M.delTransitionIssue(bufnr)
+  del(bufnr, transitionKey)
+end
+
+--[[ END ASSIGN]]
 return M
