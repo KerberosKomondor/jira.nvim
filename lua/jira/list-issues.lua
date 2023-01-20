@@ -9,6 +9,10 @@ local function listIssuesUi(lines)
     focusable = true,
     border = {
       style = 'rounded',
+      text = {
+        top = ' My Jira Issues ',
+        top_align = 'center',
+      },
     },
     position = '50%',
     size = {
